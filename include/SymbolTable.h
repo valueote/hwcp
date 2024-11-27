@@ -131,7 +131,7 @@ public:
     int getParamNo() const { return paramNo; };
     void setConst() { constant = true;};
     bool getConst() const { return constant; };
-        std::string getName() const { return name;};
+    std::string getName() const { return name;};
     // You can add any function you need here.
 };
 

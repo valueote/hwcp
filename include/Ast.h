@@ -375,9 +375,11 @@ public:
     for (int i = 0; i < level; i++)
       std::cout << "  ";
     std::cout << "DeclStmt" << std::endl;
-    // id->output(level + 1);
+    id->output(level + 1);
     if (expr)
       expr->output(level + 1);
+    if(getNext())
+        getNext()->output(level + 1);
   }
 };
 
