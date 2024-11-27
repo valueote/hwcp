@@ -193,6 +193,11 @@ public:
     std::cout << "CallExpr" << std::endl;
     if (param)
       param->output(level + 1);
+    Node* tmp = param;
+    while(tmp->getNext()){
+        tmp = tmp->getNext();
+        tmp->output(level + 1);
+    }
   }
 };
 
