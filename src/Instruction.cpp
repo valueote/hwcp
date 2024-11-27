@@ -65,37 +65,27 @@ BinaryInstruction::BinaryInstruction(unsigned opcode, Operand* dst, Operand* src
 
 BinaryInstruction::~BinaryInstruction() {}
 
-
-void BinaryInstruction::output() const {
-    std::string op_str;
-    switch (opcode) {
-        case ADD:
-            op_str = "add";
-            break;
-        case SUB:
-            op_str = "sub";
-            break;
-        case AND:
-            op_str = "and";
-            break;
-        case OR:
-            op_str = "or";
-            break;
-        case MUL:
-            op_str = "mul";
-            break;
-        case DIV:
-            op_str = "div";
-            break;
-        case MOD:
-            op_str = "mod";
-            break;
-        default:
-            op_str = "unknown";
-            break;
+void BinaryInstruction::output() const
+{
+    std::string s1, s2, s3, op, type;
+    s1 = operands[0]->toStr();
+    s2 = operands[1]->toStr();
+    s3 = operands[2]->toStr();
+    type = operands[0]->getType()->toStr();
+    switch (opcode)
+    {
+    case ADD:
+        op = "add";
+        break;
+    case SUB:
+        op = "sub";
+        break;
+    default:
+        break;
     }
-    fprintf(yyout, "  %s = %s %s, %s\n", operands[0]->toStr().c_str(), op_str.c_str(), operands[1]->toStr().c_str(), operands[2]->toStr().c_str());
+    fprintf(yyout, "  %s = %s %s %s, %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str(), s3.c_str());
 }
+
 
 CmpInstruction::CmpInstruction(unsigned opcode, Operand* dst, Operand* src1, Operand* src2, BasicBlock* insert_bb) : Instruction(CMP, insert_bb) {
     this->opcode = opcode;
@@ -109,41 +99,50 @@ CmpInstruction::CmpInstruction(unsigned opcode, Operand* dst, Operand* src1, Ope
 
 CmpInstruction::~CmpInstruction() {}
 
-void CmpInstruction::output() const {
-    std::string op_str;
-    switch (opcode) {
-        case E:
-            op_str = "eq";
-            break;
-        case NE:
-            op_str = "ne";
-            break;
-        case L:
-            op_str = "lt";
-            break;
-        case LE:
-            op_str = "le";
-            break;
-        case G:
-            op_str = "gt";
-            break;
-        case GE:
-            op_str = "ge";
-            break;
-        default:
-            op_str = "unknown";
-            break;
+void CmpInstruction::output() const
+{
+    std::string s1, s2, s3, op, type;
+    s1 = operands[0]->toStr();
+    s2 = operands[1]->toStr();
+    s3 = operands[2]->toStr();
+    type = operands[1]->getType()->toStr();
+    switch (opcode)
+    {
+    case E:
+        op = "eq";
+        break;
+    case NE:
+        op = "ne";
+        break;
+    case L:
+        op = "slt";
+        break;
+    case LE:
+        op = "sle";
+        break;
+    case G:
+        op = "sgt";
+        break;
+    case GE:
+        op = "sge";
+        break;
+    default:
+        op = "";
+        break;
     }
-    fprintf(yyout, "  %s = icmp %s %s, %s\n", operands[0]->toStr().c_str(), op_str.c_str(), operands[1]->toStr().c_str(), operands[2]->toStr().c_str());
+
+    fprintf(yyout, "  %s = icmp %s %s %s, %s\n", s1.c_str(), op.c_str(), type.c_str(), s2.c_str(), s3.c_str());
 }
 
-UncondBrInstruction::UncondBrInstruction(BasicBlock* to, BasicBlock* insert_bb) : Instruction(UNCOND, insert_bb) 
+
+
+UncondBrInstruction::UncondBrInstruction(BasicBlock* to, BasicBlock* insert_bb) : Instruction(UNCOND, insert_bb)
 {
     branch = to;
 }
 
 void UncondBrInstruction::output() const {
-    fprintf(yyout, "  br label %%%d\n", branch->getNo());
+    fprintf(yyout, "  br label %%B%d\n", branch->getNo());
 }
 
 void UncondBrInstruction::setBranch(BasicBlock* bb) 
@@ -166,9 +165,17 @@ CondBrInstruction::CondBrInstruction(BasicBlock* true_branch, BasicBlock* false_
 
 CondBrInstruction::~CondBrInstruction() {}
 
-void CondBrInstruction::output() const {
-    fprintf(yyout, "  br i1 %s, label %%%d, label %%%d\n", operands[0]->toStr().c_str(), true_branch->getNo(), false_branch->getNo());
+void CondBrInstruction::output() const
+{
+    std::string cond, type;
+    cond = operands[0]->toStr();
+    type = operands[0]->getType()->toStr();
+    int true_label = true_branch->getNo();
+    int false_label = false_branch->getNo();
+    fprintf(yyout, "  br %s %s, label %%B%d, label %%B%d\n", type.c_str(), cond.c_str(), true_label, false_label);
 }
+
+
 
 void CondBrInstruction::setFalseBranch(BasicBlock* bb) 
 {
@@ -201,13 +208,22 @@ RetInstruction::RetInstruction(Operand* src, BasicBlock* insert_bb) : Instructio
 
 RetInstruction::~RetInstruction() {}
 
-void RetInstruction::output() const {
-    if (operands.empty()) {
+void RetInstruction::output() const
+{
+    if(operands.empty())
+    {
         fprintf(yyout, "  ret void\n");
-    } else {
-        fprintf(yyout, "  ret %s %s\n", operands[0]->getType()->toStr().c_str(), operands[0]->toStr().c_str());
+    }
+    else
+    {
+        std::string ret, type;
+        ret = operands[0]->toStr();
+        type = operands[0]->getType()->toStr();
+        fprintf(yyout, "  ret %s %s\n", type.c_str(), ret.c_str());
     }
 }
+
+
 
 AllocaInstruction::AllocaInstruction(Operand* dst, SymbolEntry* se, BasicBlock* insert_bb) : Instruction(ALLOCA, insert_bb) 
 {
@@ -219,7 +235,11 @@ AllocaInstruction::AllocaInstruction(Operand* dst, SymbolEntry* se, BasicBlock* 
 AllocaInstruction::~AllocaInstruction() {}
 
 void AllocaInstruction::output() const {
-    fprintf(yyout, "  %s = alloca %s, align 4\n", operands[0]->toStr().c_str(), se->getType()->toStr().c_str());
+   std::string dst, type;
+    dst = operands[0]->toStr();
+    type = se->getType()->toStr();
+    fprintf(yyout, "  %s = alloca %s, align 4\n", dst.c_str(), type.c_str());
+
 }
 
 LoadInstruction::LoadInstruction(Operand* dst, Operand* src_addr, BasicBlock* insert_bb) : Instruction(LOAD, insert_bb) 
@@ -232,9 +252,18 @@ LoadInstruction::LoadInstruction(Operand* dst, Operand* src_addr, BasicBlock* in
 
 LoadInstruction::~LoadInstruction() {}
 
-void LoadInstruction::output() const {
-    fprintf(yyout, "  %s = load %s, %s %s, align 4\n", operands[0]->toStr().c_str(), operands[0]->getType()->toStr().c_str(), operands[1]->getType()->toStr().c_str(), operands[1]->toStr().c_str());
+void LoadInstruction::output() const
+{
+    std::string dst = operands[0]->toStr();
+    std::string src = operands[1]->toStr();
+    std::string src_type;
+    std::string dst_type;
+    dst_type = operands[0]->getType()->toStr();
+    src_type = operands[1]->getType()->toStr();
+    fprintf(yyout, "  %s = load %s, %s %s, align 4\n", dst.c_str(), dst_type.c_str(), src_type.c_str(), src.c_str());
 }
+
+
 
 StoreInstruction::StoreInstruction(Operand* dst_addr, Operand* src, BasicBlock* insert_bb) : Instruction(STORE, insert_bb) 
 {
@@ -246,8 +275,14 @@ StoreInstruction::StoreInstruction(Operand* dst_addr, Operand* src, BasicBlock* 
 
 StoreInstruction::~StoreInstruction() {}
 
-void StoreInstruction::output() const {
-    fprintf(yyout, "  store %s %s, %s %s, align 4\n", operands[1]->getType()->toStr().c_str(), operands[1]->toStr().c_str(), operands[0]->getType()->toStr().c_str(), operands[0]->toStr().c_str());
+void StoreInstruction::output() const
+{
+    std::string dst = operands[0]->toStr();
+    std::string src = operands[1]->toStr();
+    std::string dst_type = operands[0]->getType()->toStr();
+    std::string src_type = operands[1]->getType()->toStr();
+
+    fprintf(yyout, "  store %s %s, %s %s, align 4\n", src_type.c_str(), src.c_str(), dst_type.c_str(), dst.c_str());
 }
 
 MachineOperand* Instruction::genMachineReg(int reg) 
@@ -447,7 +482,16 @@ CallInstruction::CallInstruction(Operand* dst,SymbolEntry* func,std::vector<Oper
     }
 }
 
-void CallInstruction::output() const {}
+void CallInstruction::output() const {
+    fprintf(yyout, "  %s = call %s %s(", dst ? dst->toStr().c_str() : "", func->getType()->toStr().c_str(), func->toStr().c_str());
+    for (size_t i = 1; i < operands.size(); i++) {
+        if (i != 1)
+            fprintf(yyout, ", ");
+        fprintf(yyout, "%s %s", operands[i]->getType()->toStr().c_str(), operands[i]->toStr().c_str());
+    }
+    fprintf(yyout, ")\n");
+}
+
 
 CallInstruction::~CallInstruction() {}
 
@@ -459,7 +503,9 @@ ZextInstruction::ZextInstruction(Operand* dst, Operand* src, BasicBlock* insert_
     src->addUse(this);
 }
 
-void ZextInstruction::output() const {}
+void ZextInstruction::output() const {
+    fprintf(yyout, "  %s = zext %s %s to %s\n", operands[0]->toStr().c_str(), operands[1]->getType()->toStr().c_str(), operands[1]->toStr().c_str(), operands[0]->getType()->toStr().c_str());
+}
 
 ZextInstruction::~ZextInstruction() {}
 
@@ -471,7 +517,10 @@ XorInstruction::XorInstruction(Operand* dst, Operand* src, BasicBlock* insert_bb
     src->addUse(this);
 }
 
-void XorInstruction::output() const {}
+
+void XorInstruction::output() const {
+    fprintf(yyout, "  %s = xor %s %s, true\n", operands[0]->toStr().c_str(), operands[1]->getType()->toStr().c_str(), operands[1]->toStr().c_str());
+}
 
 XorInstruction::~XorInstruction() {}
 
@@ -488,7 +537,9 @@ GepInstruction::GepInstruction(Operand* dst, Operand* arr, Operand* index, Basic
     last = false;
 }
 
-void GepInstruction::output() const {}
+void GepInstruction::output() const {
+    fprintf(yyout, "  %s = getelementptr inbounds %s, %s %s, i32 %s\n", operands[0]->toStr().c_str(), operands[1]->getType()->toStr().c_str(), operands[1]->getType()->toStr().c_str(), operands[1]->toStr().c_str(), operands[2]->toStr().c_str());
+}
 
 GepInstruction::~GepInstruction() {}
 
