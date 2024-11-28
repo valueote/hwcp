@@ -3,9 +3,9 @@ int main() {
  int sum = -1;
 
  // outer loop
- for (int i = 0; i < a * 2; ++i) {
+ for (int i = 0; i < a * 2; i++) {
  // inner loop
- for (int j = 0; j < a ; ++j) {
+ for (int j = 0; j < a ; j++) {
  if (j < a / 2 && j % 2 != 0 ) {
  sum = sum + i * j / 2 + i * j;
  } else {

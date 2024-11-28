@@ -101,6 +101,14 @@ LINECOMMENT \/\/[^\n]*
 "--" {
     return DECREMENT;
 }
+
+"++" {
+    return POSTINCREMENT;
+}
+"--" {
+    return POSTDECREMENT;
+}
+
 "&&" {
     return AND;
 }

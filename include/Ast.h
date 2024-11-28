@@ -180,6 +180,26 @@ public:
   }
 };
 
+class PostfixExpr : public ExprNode {
+public:
+    enum OpType { POSTINCREMENT, POSTDECREMENT };
+
+    PostfixExpr(SymbolEntry* se, OpType op, ExprNode* expr)
+        : ExprNode(se), op(op), expr(expr) {}
+
+    OpType getOpType() const { return op; }
+    ExprNode* getExpr() const { return expr; }
+    void output(int level){
+      std::cout << "UnaryExpr: op=" << op << std::endl;
+      if(expr)
+        expr->output(level + 1);
+    }
+private:
+    OpType op;
+    ExprNode* expr;
+};
+
+
 class CallExpr : public ExprNode {
 private:
   ExprNode *param;

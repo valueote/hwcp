@@ -43,7 +43,6 @@
 %token ADD SUB MUL DIV MOD OR AND LESS LESSEQUAL GREATER GREATEREQUAL ASSIGN EQUAL NOTEQUAL NOT DECREMENT INCREMENT
 %token CONST
 %token RETURN CONTINUE BREAK
-
 %type<stmttype> Stmts Stmt AssignStmt ExprStmt BlockStmt IfStmt WhileStmt ForStmt InitStmt BreakStmt ContinueStmt ReturnStmt DeclStmt FuncDef ConstDeclStmt VarDeclStmt ConstDefList VarDef ConstDef VarDefList FuncFParam FuncFParams FuncFParamsPlus BlankStmt
 %type<exprtype> Exp AddExp Cond LOrExp PrimaryExp LVal RelExp LAndExp MulExp ConstExp EqExp UnaryExp InitVal ConstInitVal  FuncRParams Array FuncArray
 %type<exprtype> CondExp LoopStmt
@@ -239,7 +238,16 @@ UnaryExp
         SymbolEntry* se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
         $$ = new UnaryExpr(se, UnaryExpr::INCREMENT, $2);
     }
+    | LVal INCREMENT {
+        SymbolEntry* se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new UnaryExpr(se, UnaryExpr::INCREMENT, $1);
+    }
+    | LVal DECREMENT {
+        SymbolEntry* se = new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel());
+        $$ = new UnaryExpr(se, UnaryExpr::DECREMENT, $1);
+    }
     ;
+
 MulExp
     : UnaryExp {$$ = $1;}
     | MulExp MUL UnaryExp {
