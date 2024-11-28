@@ -17,7 +17,7 @@ int main() {
  }
 
  // print the value of `sum`
- //printf("%d\n", sum);
-
+ putint(sum);
+ //printf(sum);
  return 0;
 }

@@ -28,6 +28,8 @@ BLOCKCOMMENTELEMENT .
 BLOCKCOMMENTEND \*\/
 %x BLOCKCOMMENT
 LINECOMMENT \/\/[^\n]*
+
+
 %%
 "int" {
     return INT;
@@ -102,13 +104,6 @@ LINECOMMENT \/\/[^\n]*
     return DECREMENT;
 }
 
-"++" {
-    return POSTINCREMENT;
-}
-"--" {
-    return POSTDECREMENT;
-}
-
 "&&" {
     return AND;
 }
@@ -165,7 +160,6 @@ LINECOMMENT \/\/[^\n]*
     yylval.itype = temp;
     return INTEGER;
 }
-
 "putint" {
     if(dump_tokens)
         DEBUG_FOR_LAB4(yytext);
@@ -236,6 +230,17 @@ LINECOMMENT \/\/[^\n]*
     SymbolEntry* se = new IdentifierSymbolEntry(funcType, yytext, st->getLevel(), -1, true);
     st->install(yytext, se);
     return ID;
+}
+
+
+\"(\\.|[^\\"])*\" {
+    if(dump_tokens)
+        DEBUG_FOR_LAB4(string("STRING\t") + yytext);
+    char *lexeme;
+    lexeme = new char[strlen(yytext) + 1];
+    strcpy(lexeme, yytext);
+    yylval.strtype = lexeme;
+    return STRING;
 }
 
 

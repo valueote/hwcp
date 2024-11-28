@@ -687,16 +687,41 @@ void UnaryExpr::genCode() {
         }
         new BinaryInstruction(BinaryInstruction::SUB, dst, src1, src2, bb);
     } else if (op == INCREMENT) {
+        // Get the address of the original variable
+        Operand* addr = nullptr;
+        if (expr->getSymbolEntry()->isVariable()) {
+            addr = dynamic_cast<IdentifierSymbolEntry*>(expr->getSymbolEntry())->getAddr();
+        }
+        // If it's not a simple variable (e.g., array element), you might need to generate address calculation
+
         Operand* one = new Operand(new ConstantSymbolEntry(TypeSystem::intType, 1));
+        // Compute the incremented value
         new BinaryInstruction(BinaryInstruction::ADD, dst, src, one, bb);
+
+        // Store the new value back to the original address
+        if (addr) {
+            new StoreInstruction(addr, dst, bb);
+        }
     } else if (op == DECREMENT) {
+        // Similar approach for decrement
+        Operand* addr = nullptr;
+        if (expr->getSymbolEntry()->isVariable()) {
+            addr = dynamic_cast<IdentifierSymbolEntry*>(expr->getSymbolEntry())->getAddr();
+        }
+
         Operand* one = new Operand(new ConstantSymbolEntry(TypeSystem::intType, 1));
+        // Compute the decremented value
         new BinaryInstruction(BinaryInstruction::SUB, dst, src, one, bb);
+
+        // Store the new value back to the original address
+        if (addr) {
+            new StoreInstruction(addr, dst, bb);
+        }
     }
 }
 
 
-void AssignStmt::genCode() 
+void AssignStmt::genCode()
 {
     BasicBlock* bb = builder->getInsertBB();
     expr->genCode();
