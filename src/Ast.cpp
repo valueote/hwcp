@@ -662,38 +662,39 @@ void CallExpr::genCode()
     BasicBlock* bb = builder->getInsertBB();
     new CallInstruction(dst, symbolEntry, operands, bb);
 }
+void ExprNode::genCode() {}
 
-void UnaryExpr::genCode() 
-{
-    // Todo
+void UnaryExpr::genCode() {
     expr->genCode();
+    BasicBlock* bb = builder->getInsertBB();
+    Operand* src = expr->getOperand();
+
     if (op == NOT) {
-        BasicBlock* bb = builder->getInsertBB();
-        Operand* src = expr->getOperand();
-        if (expr->getType()->getSize() == 32) 
-        {
+        if (expr->getType()->getSize() == 32) {
             Operand* temp = new Operand(new TemporarySymbolEntry(TypeSystem::boolType, SymbolTable::getLabel()));
             new CmpInstruction(CmpInstruction::NE, temp, src, new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0)), bb);
             src = temp;
         }
         new XorInstruction(dst, src, bb);
-    }
-    else if (op == SUB) 
-    {
+    } else if (op == SUB) {
         Operand* src2;
-        BasicBlock* bb = builder->getInsertBB();
-        Operand* src1 =
-            new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0));
+        Operand* src1 = new Operand(new ConstantSymbolEntry(TypeSystem::intType, 0));
         if (expr->getType()->getSize() == 1) {
-            src2 = new Operand(new TemporarySymbolEntry(
-                TypeSystem::intType, SymbolTable::getLabel()));
+            src2 = new Operand(new TemporarySymbolEntry(TypeSystem::intType, SymbolTable::getLabel()));
             new ZextInstruction(src2, expr->getOperand(), bb);
-        } else
+        } else {
             src2 = expr->getOperand();
+        }
         new BinaryInstruction(BinaryInstruction::SUB, dst, src1, src2, bb);
+    } else if (op == INCREMENT) {
+        Operand* one = new Operand(new ConstantSymbolEntry(TypeSystem::intType, 1));
+        new BinaryInstruction(BinaryInstruction::ADD, dst, src, one, bb);
+    } else if (op == DECREMENT) {
+        Operand* one = new Operand(new ConstantSymbolEntry(TypeSystem::intType, 1));
+        new BinaryInstruction(BinaryInstruction::SUB, dst, src, one, bb);
     }
 }
-void ExprNode::genCode() {}
+
 
 void AssignStmt::genCode() 
 {
@@ -830,24 +831,19 @@ int BinaryExpr::getValue()
     }
     return value;
 }
-
 UnaryExpr::UnaryExpr(SymbolEntry* se, int op, ExprNode* expr)
     : ExprNode(se, UNARYEXPR), op(op), expr(expr) {
     std::string op_str = op == UnaryExpr::NOT ? "!" : "-";
-    if (op == UnaryExpr::NOT) 
-    {
+    if (op == UnaryExpr::NOT) {
         type = TypeSystem::intType;
         dst = new Operand(se);
-        if (expr->isUnaryExpr()) 
-        {
+        if (expr->isUnaryExpr()) {
             UnaryExpr* ue = (UnaryExpr*)expr;
-            if (ue->getOp() == UnaryExpr::NOT) 
-            {
+            if (ue->getOp() == UnaryExpr::NOT) {
                 if (ue->getType() == TypeSystem::intType)
                     ue->setType(TypeSystem::boolType);
             }
         }
-        
     } else if (op == UnaryExpr::SUB) {
         type = TypeSystem::intType;
         dst = new Operand(se);
@@ -857,8 +853,11 @@ UnaryExpr::UnaryExpr(SymbolEntry* se, int op, ExprNode* expr)
                 if (ue->getType() == TypeSystem::intType)
                     ue->setType(TypeSystem::boolType);
         }
+    } else if (op == UnaryExpr::INCREMENT || op == UnaryExpr::DECREMENT) {
+        type = expr->getType();
+        dst = expr->getOperand();
     }
-};
+}
 
 int UnaryExpr::getValue() 
 {
