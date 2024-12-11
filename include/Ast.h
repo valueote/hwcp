@@ -483,7 +483,7 @@ private:
 public:
     ForStmt(StmtNode *init, ExprNode *cond, ExprNode *loop, StmtNode *stmt)
         : init(init), cond(cond), loop(loop), stmt(stmt) {}
-        void genCode(){std::cout<< "";};
+    void genCode();
     StmtNode *getInit() const { return init; }
     ExprNode *getCond() const { return cond; }
     ExprNode *getLoop() const { return loop; }

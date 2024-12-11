@@ -62,6 +62,7 @@ int main(int argc, char* argv[]) {
     }
     yyparse();
     ast.genCode(&unit);
+
     if(dump_ir)
         unit.output();
     unit.genMachineCode(&mUnit);

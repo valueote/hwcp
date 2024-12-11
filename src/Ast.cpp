@@ -644,6 +644,52 @@ void WhileStmt::genCode()
     builder->setInsertBB(end_bb);
 }
 
+void ForStmt::genCode() {
+    Function* func = builder->getInsertBB()->getParent();
+    BasicBlock* cond_bb = new BasicBlock(func);  // 条件判断的基本块
+    BasicBlock* loop_bb = new BasicBlock(func);  // 循环体的基本块
+    BasicBlock* end_bb = new BasicBlock(func);   // 循环结束的基本块
+
+    // 生成初始化代码
+    if (init) {
+        init->genCode();
+    }
+
+    // 跳转到条件判断的基本块
+    BasicBlock* bb = builder->getInsertBB();
+    new UncondBrInstruction(cond_bb, bb);
+
+    // 设置插入点为条件判断的基本块
+    builder->setInsertBB(cond_bb);
+
+    // 生成条件判断代码
+    if (cond) {
+        cond->genCode();
+        backPatch(cond->trueList(), loop_bb);  // 条件为真时跳转到循环体
+        backPatch(cond->falseList(), end_bb); // 条件为假时跳转到循环结束
+    }
+
+    // 设置插入点为循环体的基本块
+    builder->setInsertBB(loop_bb);
+
+    // 生成循环体代码
+    if (stmt) {
+        stmt->genCode();
+    }
+
+    // 生成迭代代码
+    if (loop) {
+        loop->genCode();
+    }
+
+    // 跳转回条件判断的基本块
+    bb = builder->getInsertBB();
+    new UncondBrInstruction(cond_bb, bb);
+
+    // 设置插入点为循环结束的基本块
+    builder->setInsertBB(end_bb);
+}
+
 void BlankStmt::genCode() {}
 
 void InitValueListExpr::genCode() {}
