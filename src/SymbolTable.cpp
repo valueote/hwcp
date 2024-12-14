@@ -85,7 +85,6 @@ void IdentifierSymbolEntry::setValue(int value) {
             this->value = value;
             initial = true;
         } else {
-            // 需要报错
         }
     } else {
         this->value = value;

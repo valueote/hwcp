@@ -105,7 +105,7 @@ void FunctionDef::genCode()
             truebranch->addPred(*block);
             falsebranch->addPred(*block);
         } 
-        else if (last->isUncond())  //无条件跳转指令可获取跳转的目标块
+        else if (last->isUncond())
         {
             BasicBlock* dst = dynamic_cast<UncondBrInstruction*>(last)->getBranch();
             (*block)->addSucc(dst);
@@ -203,10 +203,10 @@ void BinaryExpr::genCode()
     Function* func = bb->getParent();
     if (op == AND) 
     {
-        BasicBlock* trueBB = new BasicBlock(func);  // if the result of lhs is true, jump to the trueBB.
+        BasicBlock* trueBB = new BasicBlock(func);
         expr1->genCode();
         backPatch(expr1->trueList(), trueBB);
-        builder->setInsertBB(trueBB);  // set the insert point to the trueBB so that intructions
+        builder->setInsertBB(trueBB);
         expr2->genCode();
         true_list = expr2->trueList();
         false_list = merge(expr1->falseList(), expr2->falseList());
@@ -467,22 +467,15 @@ void DeclStmt::genCode()
         Operand* addr;
         SymbolEntry* addr_se;
         Type* type;
-        // if (se->isParam() && se->getType()->isArray())
-        //     type = new PointerType(TypeSystem::intType);
-        // else
         type = new PointerType(se->getType());
         addr_se = new TemporarySymbolEntry(type, SymbolTable::getLabel());
         addr = new Operand(addr_se);
         alloca = new AllocaInstruction(addr, se);
-        // allocate space for local id in function stack.
-        entry->insertFront(alloca);  // allocate instructions should be inserted
-                                     // into the begin of the entry block.
+        entry->insertFront(alloca);
         Operand* temp = nullptr;
         if (se->isParam())
             temp = se->getAddr();
-        se->setAddr(addr);  // set the addr operand in symbol entry so that
-                            // we can use it in subsequent code generation.
-                            // can use it in subsequent code generation.
+        se->setAddr(addr);
         if (expr) 
         {
             if (expr->isInitValueListExpr()) 
@@ -580,7 +573,6 @@ void DeclStmt::genCode()
 
 void ReturnStmt::genCode() 
 {
-    // Todo
     BasicBlock* bb = builder->getInsertBB();
     Operand* src = nullptr;
     if (retValue) 
@@ -592,12 +584,10 @@ void ReturnStmt::genCode()
 }
 void ExprStmt::genCode() 
 {
-    // Todo
     expr->genCode();
 }
 void ContinueStmt::genCode() 
 {
-    // Todo
     Function* func = builder->getInsertBB()->getParent();
     BasicBlock* bb = builder->getInsertBB();
     new UncondBrInstruction(((WhileStmt*)whileStmt)->get_cond_bb(), bb);

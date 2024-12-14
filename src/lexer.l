@@ -232,7 +232,7 @@ LINECOMMENT \/\/[^\n]*
 }
 "putint" {
     if(dump_tokens)
-        DEBUG_FOR_LAB4(yytext);
+     printf("('%s\')\n",yytext);
     char *lexeme;
     lexeme = new char[strlen(yytext) + 1];
     strcpy(lexeme, yytext);
@@ -251,7 +251,7 @@ LINECOMMENT \/\/[^\n]*
 
 "getint" {
     if(dump_tokens)
-        DEBUG_FOR_LAB4(yytext);
+     printf("('%s\')\n",yytext);
     char *lexeme;
     lexeme = new char[strlen(yytext) + 1];
     strcpy(lexeme, yytext);
@@ -268,7 +268,7 @@ LINECOMMENT \/\/[^\n]*
 }
 "putch" {
     if(dump_tokens)
-        DEBUG_FOR_LAB4(yytext);
+    printf("('%s\')\n",yytext);
     char *lexeme;
     lexeme = new char[strlen(yytext) + 1];
     strcpy(lexeme, yytext);
@@ -286,7 +286,7 @@ LINECOMMENT \/\/[^\n]*
 }
 "getch" {
     if(dump_tokens)
-        DEBUG_FOR_LAB4(yytext);
+    printf("('%s\')\n",yytext);
     char *lexeme;
     lexeme = new char[strlen(yytext) + 1];
     strcpy(lexeme, yytext);
