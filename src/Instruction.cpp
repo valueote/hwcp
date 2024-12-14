@@ -392,7 +392,6 @@ void LoadInstruction::genMachineCode(AsmBuilder* builder)
 {
     auto cur_block = builder->getBlock();
     MachineInstruction* cur_inst = nullptr;
-    // Load global operand
     if(operands[1]->getEntry()->isVariable()
     && dynamic_cast<IdentifierSymbolEntry*>(operands[1]->getEntry())->isGlobal())
     {
@@ -400,29 +399,23 @@ void LoadInstruction::genMachineCode(AsmBuilder* builder)
         auto internal_reg1 = genMachineVReg();
         auto internal_reg2 = new MachineOperand(*internal_reg1);
         auto src = genMachineOperand(operands[1]);
-        // example: load r0, addr_a
         cur_inst = new LoadMInstruction(cur_block, internal_reg1, src);
         cur_block->InsertInst(cur_inst);
-        // example: load r1, [r0]
         cur_inst = new LoadMInstruction(cur_block, dst, internal_reg2);
         cur_block->InsertInst(cur_inst);
     }
-    // Load local operand
     else if(operands[1]->getEntry()->isTemporary()
     && operands[1]->getDef()
     && operands[1]->getDef()->isAlloc())
     {
-        // example: load r1, [r0, #4]
         auto dst = genMachineOperand(operands[0]);
         auto src1 = genMachineReg(11);
         auto src2 = genMachineImm(dynamic_cast<TemporarySymbolEntry*>(operands[1]->getEntry())->getOffset());
         cur_inst = new LoadMInstruction(cur_block, dst, src1, src2);
         cur_block->InsertInst(cur_inst);
     }
-    // Load operand from temporary variable
     else
     {
-        // example: load r1, [r0]
         auto dst = genMachineOperand(operands[0]);
         auto src = genMachineOperand(operands[1]);
         cur_inst = new LoadMInstruction(cur_block, dst, src);
@@ -598,7 +591,6 @@ void CallInstruction::genMachineCode(AsmBuilder* builder)
 void BinaryInstruction::genMachineCode(AsmBuilder* builder) 
 {
     // TODO 
-    // complete other instructions
     auto cur_block = builder->getBlock();
     auto dst = genMachineOperand(operands[0]);
     auto src1 = genMachineOperand(operands[1]);

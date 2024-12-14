@@ -1,6 +1,0 @@
-int main(){
-    int b = 1;
-    b++;
-    putint(b);
-    return 0;
-  }

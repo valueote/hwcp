@@ -41,7 +41,6 @@ ConstantSymbolEntry::ConstantSymbolEntry(Type* type, std::string value)
 
 ConstantSymbolEntry::ConstantSymbolEntry(Type* type)
     : SymbolEntry(type, SymbolEntry::CONSTANT) {
-    // assert(type->isArray());
 }
 
 int ConstantSymbolEntry::getValue() const {
@@ -97,7 +96,6 @@ void IdentifierSymbolEntry::setArrayValue(int* arrayValue) {
             this->arrayValue = arrayValue;
             initial = true;
         } else {
-            // 需要报错
         }
     } else {
         this->arrayValue = arrayValue;
@@ -162,9 +160,7 @@ SymbolEntry* SymbolTable::lookup(std::string name) {
     return nullptr;
 }
 
-// install the entry into current symbol table.
 bool SymbolTable::install(std::string name, SymbolEntry* entry) {
-    // 同时检查是否重定义
     if (this->symbolTable.find(name) != this->symbolTable.end()) {
         SymbolEntry* se = this->symbolTable[name];
         if (se->getType()->isFunc())

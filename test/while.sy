@@ -1,0 +1,20 @@
+int main() {
+    int a = 0;
+    int b = 10;
+    int sum = 0;
+
+    while (a < b) {
+        sum = sum + a;
+        a = a + 1;
+    }
+
+    if (sum > 20) {
+        sum = sum - 5;
+    } else {
+        sum = sum + 5;
+    }
+
+    int result = sum * 2 / 4;
+    putint(result);
+    return 0;
+}

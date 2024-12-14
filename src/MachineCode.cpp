@@ -259,7 +259,6 @@ void LoadMInstruction::output()
         return;
     }
 
-    // Load address
     if (this->use_list[0]->isReg() || this->use_list[0]->isVReg())
         fprintf(yyout, "[");
 
@@ -464,7 +463,6 @@ void MachineFunction::output()
      *  3. Save callee saved register
      *  4. Allocate stack space for local variable */
 
-    // Traverse all the block in block_list to print assembly code.
     MachineOperand *fp = new MachineOperand(MachineOperand::REG, 11);
     MachineOperand *sp = new MachineOperand(MachineOperand::REG, 13);
     MachineOperand *lr = new MachineOperand(MachineOperand::REG, 14);
@@ -495,7 +493,7 @@ void MachineUnit::PrintGlobalDecl()
 {
     std::vector<int> constIdx;
     std::vector<int> zeroIdx;
-    if (global_list.empty() == false)           //打印全局变量列表
+    if (global_list.empty() == false)
         fprintf(yyout, ".data\n\n");
     for (long unsigned int i = 0; i < global_list.size(); i++) 
     {
@@ -528,7 +526,6 @@ void MachineUnit::PrintGlobalDecl()
         }
     }
     if (constIdx.empty() == false) 
-    {        //打印常量列表
         fprintf(yyout, ".section .rodata\n\n");
         for (long unsigned int i = 0; i < constIdx.size(); i++) 
         {

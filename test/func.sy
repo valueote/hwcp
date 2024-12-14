@@ -1,0 +1,21 @@
+int isLeap(int year){
+    if (year % 4 == 0) {
+        if (year % 100 == 0) {
+            if (year % 400 == 0) {
+                return 1;
+            } else {
+                return 0;
+            }
+        } else {
+            return 1;
+        }
+    } else {
+        return 0;
+  }
+}
+
+int main(){
+  int a = isLeap(2024);
+  putint(a); 
+  return 0;
+}

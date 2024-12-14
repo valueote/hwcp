@@ -18,13 +18,13 @@ void LinearScan::allocateRegisters()
         func = f;
         bool success;
         success = false;
-        while (!success)        // repeat until all vregs can be mapped
+        while (!success)
         {
             computeLiveIntervals();
             success = linearScanRegisterAllocation();
-            if (success)        // all vregs can be mapped to real regs
+            if (success)
                 modifyCode();
-            else                // spill vregs that can't be mapped to real regs
+            else
                 genSpillCode();
         }
     }
@@ -211,7 +211,6 @@ void LinearScan::genSpillCode()
 
 void LinearScan::expireOldIntervals(Interval *interval)
 {
-    //遍历Active列表
     auto it = active.begin();
     while (it != active.end()) 
     {
@@ -225,8 +224,6 @@ void LinearScan::expireOldIntervals(Interval *interval)
 
 void LinearScan::spillAtInterval(Interval *interval)
 {
-    // 寻找哪一个标志位可以置为true
-    // Todo
     auto spill = active.back();
     int end1 = spill -> end;
     int end2 = interval -> end;
